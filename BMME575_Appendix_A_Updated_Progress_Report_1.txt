@@ -1,4 +1,4 @@
-﻿Appendix A: Updated BMME 575 Progress Report 1
+﻿Updated BMME 575 Progress Report 1
 Ismayil Ismayilli, Alicia Equan, Hanad Ali
 Selection of the Target Paper
 For this assignment, we will be using Facial expressions of emotion states and their neuronal correlates in mice authored by Nate Dolensek, Daniel A. Gehrlach, Alexandra S. Klein, and Nadine Gogolla. The dataset used for this paper is publicly available and can be found here: https://zenodo.org/records/19738894 (Dolensek et al., 2020).
