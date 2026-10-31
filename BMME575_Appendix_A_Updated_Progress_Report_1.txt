@@ -1,0 +1,49 @@
+﻿Appendix A: Updated BMME 575 Progress Report 1
+Ismayil Ismayilli, Alicia Equan, Hanad Ali
+Selection of the Target Paper
+For this assignment, we will be using Facial expressions of emotion states and their neuronal correlates in mice authored by Nate Dolensek, Daniel A. Gehrlach, Alexandra S. Klein, and Nadine Gogolla. The dataset used for this paper is publicly available and can be found here: https://zenodo.org/records/19738894 (Dolensek et al., 2020).
+In this paper, the goal was to determine whether mice produce distinct facial expressions with different emotional states. The emotional states included pain, bitterness, sweetness, malaise, active fear, and passive fear. These emotional states were achieved by exposing the mice to different stimuli, including tail shock, quinine, sucrose, lithium chloride, escape, and freezing, respectively. The mice’s faces were recorded after each stimulus, and machine learning was used to distinguish between the emotional states.
+We will be analyzing the results found from the tail shock experiment to see if the aversive stimuli produced a recognizable facial-expression state. To collect this data, researchers recorded the mice 120 frames before the electrical tail shock and 60 frames during the electrical tail shock. This sequence was repeated 3 times, resulting in 540 frames.
+Because the selected paper relies on a classical machine-learning pipeline rather than a deep learning model, we plan to keep the paper’s approach as a baseline and also train a small convolutional neural network (CNN) on the same images. Both models will use the same training, validation, and test sets so that their results can be compared directly. We will also discuss this plan with Dr. Azarang.
+Our proposed dataset and preprocessing pipeline is based on Dolensek et al. (2020). We will convert the images to a histogram of oriented gradients (HOG) features. This will allow us to turn the image patterns into numerical vectors of the mouse’s face. These feature vectors can then be provided to a machine-learning model (called Random Forest classifier) to determine whether a mouse facial image corresponds to the pre-shock or during-shock condition. Each frame will be cropped to the head region and converted to HOG features using the same settings as the paper (8 orientations and 32 × 32-pixel cells). The shock is presented at frames 3600, 7260, and 10920 of the recording. For each presentation, the 120 frames before the shock are labeled 0 (pre-shock) and the 60 frames during the shock are labeled 1 (during-shock), which gives 360 pre-shock and 180 during-shock frames in total.
+To evaluate the Random Forest classifier model, the 540 frames will be separated into training, validation, and test sets. To remain consistent with the methodology used by Dolensek et al. (2020), a random sample of 15% of the observations will be used to train the model. The publicly available Jupyter notebook file demonstrates this with the following code:
+  
+
+The remaining observations will be separated into validation and test sets. The validation set will be used to evaluate the model during development, while the test set will be reserved for the final evaluation of the trained model. The proportion of pre-shock and during-shock observations will be maintained across the three sets.
+The code below shows how we implemented this split. The authors’ code uses a simple random sample, which does not guarantee that the ratio of pre-shock to during-shock frames is kept, so we used a stratified split from scikit-learn instead. We first selected 15% of the frames for training and then divided the remaining frames equally between the validation and test sets, applying stratification at both steps.
+  
+
+Table 1. Number of frames in each set after the stratified split.
+Set
+	# frames
+	# pre-shock
+	# during-shock
+	% during-shock
+	Training
+	81
+	54
+	27
+	33.3
+	Validation
+	229
+	153
+	76
+	33.2
+	Test
+	230
+	153
+	77
+	33.5
+	Total
+	540
+	360
+	180
+	33.3
+	Table 1 shows the resulting sets. They contain 81, 229, and 230 frames, do not overlap, and together include all 540 frames. About one third of the frames in each set are during-shock frames, which matches the full dataset.
+One limitation of this approach is that neighboring video frames are almost identical, so a random split can place near-duplicates of a test frame in the training set and make the performance look better than it is. To check for this, we will also run a stricter evaluation in which the model is trained on the first shock presentation, validated on the second, and tested on the third.
+Finally, the Random Forest and the CNN will be compared on the same test set using accuracy, a confusion matrix, and the precision and recall of each class. The complete code for loading the data, extracting the HOG features, splitting the data, and training both models is provided in the GitHub repository linked at the top of Progress Report 2 (run_pipeline.py).
+
+
+Reference:
+Dolensek, N., Gehrlach, D. A., Klein, A. S., & Gogolla, N. (2020). Facial expressions of emotion states and their neuronal correlates in mice. Science, 368(6486), 89–94. https://doi.org/10.1126/science.aaz9468
+Dolensek, N., Gehrlach, D. A., Klein, A. S., & Gogolla, N. (2020). Facial expressions of emotion states and their neuronal correlates in mice [Data set and analysis code]. Zenodo. https://doi.org/10.5281/zenodo.3618395
